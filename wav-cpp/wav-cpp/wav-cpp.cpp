@@ -14,7 +14,7 @@ class SineOscillator {
 
 public:
     SineOscillator(float theFrequency, float theAmplitude): frequency(theFrequency), amplitude(theAmplitude) {
-        offset = PI * frequency / SAMPLE_RATE;
+        offset = 2 * PI * frequency / SAMPLE_RATE;
     }
     float process() {
         float sample = amplitude * sin(angle);
@@ -41,7 +41,7 @@ int main() {
     // format
     audioFile << "fmt ";
     write(audioFile, 16, 4);
-    write(audioFile, 1, 4); // PCM uncompressed
+    write(audioFile, 1, 2); // PCM uncompressed
     write(audioFile, 1, 2); // number of channels
     write(audioFile, SAMPLE_RATE, 4); // sample rate
     write(audioFile, SAMPLE_RATE * BIT_DEPTH / 8, 4); // bit rate
@@ -52,7 +52,7 @@ int main() {
     audioFile << "data";
     audioFile << "----"; // placeholder
 
-
+    int dataStart = audioFile.tellp();
     float maxAmplitude = pow(2, BIT_DEPTH - 1) - 1;
     for (int i = 0; i < SAMPLE_RATE * duration; ++i) {
         //audioFile << SineOscillator.process() << std::endl;
@@ -60,6 +60,13 @@ int main() {
         int intSample = static_cast<int>(sample * maxAmplitude);
         write(audioFile, intSample, 2);
     }
+    int dataEnd = audioFile.tellp();
+
+    audioFile.seekp(dataStart);
+    write(audioFile, dataEnd - dataStart, 4);
+
+    audioFile.seekp(4, std::ios::beg);
+    write(audioFile, dataEnd - 8, 4);
 
     std::cout << "Float size: " << sizeof(float) << std::endl;
     std::cout << "Int size: " << sizeof(int) << std::endl;
