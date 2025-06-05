@@ -4,6 +4,7 @@
 
 const int SAMPLE_RATE = 44100;
 const float PI = 3.14159;
+const int BIT_DEPTH = 16;
 
 class SineOscillator {
     float frequency;
@@ -25,11 +26,15 @@ public:
 int main() {
     int duration = 2;
     std::ofstream audioFile;
-    audioFile.open("waveform");
+    audioFile.open("waveform", std::ios::binary);
     SineOscillator SineOscillator(440, 0.5);
 
+    float maxAmplitude = pow(2, BIT_DEPTH - 1) - 1;
     for (int i = 0; i < SAMPLE_RATE * duration; ++i) {
-        audioFile << SineOscillator.process() << std::endl;
+        //audioFile << SineOscillator.process() << std::endl;
+        float sample = SineOscillator.process();
+        int intSample = static_cast<int>(sample * maxAmplitude);
+        audioFile.write(reinterpret_cast<char *>(&intSample), 2);
     }
 
     std::cout << "Float size: " << sizeof(float) << std::endl;
