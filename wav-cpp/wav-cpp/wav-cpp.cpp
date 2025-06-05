@@ -1,3 +1,5 @@
+// write a WAV file from scratch - C++ Audio Programming
+
 #include <iostream>
 #include <cmath>
 #include <fstream>
