@@ -32,5 +32,8 @@ int main() {
         audioFile << SineOscillator.process() << std::endl;
     }
 
+    std::cout << "Float size: " << sizeof(float) << std::endl;
+    std::cout << "Int size: " << sizeof(int) << std::endl;
+
     audioFile.close();
 }
